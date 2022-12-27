@@ -17,6 +17,7 @@ const Contracts = () => {
                             beneficiary={beneficiary}
                             depositor={depositor}
                             arbiter={arbiter}
+                            handleClick={() => {}}
                         />
                     )
                 )}

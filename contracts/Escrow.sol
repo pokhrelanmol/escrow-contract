@@ -2,7 +2,7 @@
 pragma solidity ^0.8.9;
 
 contract Escrow {
-    event Approved(uint amount);
+    event Approved(address approver, uint amount);
     event IssueRaised(string reason);
     event IssueResolved();
     address public depositor;
@@ -37,7 +37,7 @@ contract Escrow {
         uint balance = address(this).balance;
         amountToWithdraw = balance;
         isApproved = true;
-        emit Approved(balance);
+        emit Approved(msg.sender, balance);
     }
 
     function raiseIssue(string memory reason) external onlyDepositer {

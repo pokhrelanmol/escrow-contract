@@ -1,6 +1,6 @@
-import { time, loadFixture } from "@nomicfoundation/hardhat-network-helpers";
-import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
+import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
+import { BigNumber } from "ethers";
 import { ethers } from "hardhat";
 
 describe("Escrow", function () {
@@ -96,6 +96,85 @@ describe("Escrow", function () {
                 escrow,
                 "IssueResolved"
             );
+        });
+    });
+    describe("Approve", () => {
+        it("should allow  depositor to approve", async () => {
+            const { escrow, depositor } = await loadFixture(deployEscrow);
+            await escrow.connect(depositor).raiseIssue("I Don't like this");
+            await escrow.connect(depositor).resolveIssue();
+            await escrow.connect(depositor).approve();
+        });
+        it("should not allow arbiter to approve", async () => {
+            const { escrow, depositor, arbiter } = await loadFixture(
+                deployEscrow
+            );
+            await escrow.connect(depositor).raiseIssue("I Don't like this");
+            await escrow.connect(depositor).resolveIssue();
+            await escrow.connect(arbiter).approve();
+        });
+        it("should not allow beneficiary to approve", async () => {
+            const { escrow, depositor, beneficiary } = await loadFixture(
+                deployEscrow
+            );
+            await escrow.connect(depositor).raiseIssue("I Don't like this");
+            await escrow.connect(depositor).resolveIssue();
+            await expect(escrow.connect(beneficiary).approve()).to.revertedWith(
+                "Only arbiter or depositor can approve"
+            );
+        });
+        it("should not approve if issue is raised", async () => {
+            const { escrow, depositor } = await loadFixture(deployEscrow);
+            await escrow.connect(depositor).raiseIssue("I Don't like this");
+            await expect(escrow.connect(depositor).approve()).to.revertedWith(
+                "Issue is raised cannot approve"
+            );
+        });
+        it("should approve and set isApproved to true", async () => {
+            const { escrow, depositor } = await loadFixture(deployEscrow);
+            await escrow.connect(depositor).raiseIssue("I Don't like this");
+            await escrow.connect(depositor).resolveIssue();
+            await escrow.connect(depositor).approve();
+            expect(await escrow.isApproved()).to.eq(true);
+        });
+        it("shoould emit Approved event when approved", async () => {
+            const { escrow, depositor, amount } = await loadFixture(
+                deployEscrow
+            );
+            await escrow.connect(depositor).raiseIssue("I Don't like this");
+            await escrow.connect(depositor).resolveIssue();
+            await expect(escrow.connect(depositor).approve())
+                .to.emit(escrow, "Approved")
+                .withArgs(depositor.address, amount);
+        });
+        it("should set amountToWithdraw to amount", async () => {
+            const { escrow, depositor, amount } = await loadFixture(
+                deployEscrow
+            );
+            await escrow.connect(depositor).raiseIssue("I Don't like this");
+            await escrow.connect(depositor).resolveIssue();
+            await escrow.connect(depositor).approve();
+            expect(await escrow.amountToWithdraw()).to.eq(amount);
+        });
+    });
+    describe("Withdraw", () => {
+        it("should allow beneficiary to withdraw and tranfer Eth", async () => {
+            const { escrow, beneficiary, depositor } = await loadFixture(
+                deployEscrow
+            );
+            const beneficiaryBalanceBefore = await beneficiary.getBalance();
+
+            await escrow.connect(depositor).approve();
+            const amountToWithdraw = await escrow.amountToWithdraw();
+            const txRes = await escrow.connect(beneficiary).withdraw();
+            const txReceipt = await txRes.wait(1);
+            const gasUsed = txReceipt.gasUsed.mul(txReceipt.effectiveGasPrice);
+            const beneficiaryBalanceAfter = await beneficiary.getBalance();
+            const expectedBal = beneficiaryBalanceBefore
+                .add(amountToWithdraw)
+                .sub(gasUsed);
+
+            expect(beneficiaryBalanceAfter).to.eq(expectedBal);
         });
     });
 });
