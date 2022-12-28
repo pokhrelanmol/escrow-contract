@@ -1,3 +1,5 @@
+import { Contract } from "ethers";
+
 export type Children = {
     children: React.ReactNode;
 };
@@ -12,10 +14,22 @@ export interface EscrowContract {
     beneficiary: string;
     depositor: string;
     amount: number;
+    isApproved: boolean;
+    isIssueRaised: boolean;
+    contractInstance?: Contract;
 }
+export type EscrowState = EscrowContract[];
+
 export interface EscrowContractProps {
-    contracts: EscrowContract[];
-    setContracts: React.Dispatch<React.SetStateAction<EscrowContract[]>>;
+    state: EscrowContract[];
+    handleDeployContract: (
+        arbiter: string,
+        beneficiary: string,
+        amount: number
+    ) => Promise<void>;
+    handleRaiseIssue: (address: string) => Promise<void>;
+    handleResolveIssueAndApprove: (address: string) => Promise<void>;
+    handleWithdraw: (address: string) => Promise<void>;
 }
 export interface ContractCardProps extends EscrowContract {
     handleClick: () => void;

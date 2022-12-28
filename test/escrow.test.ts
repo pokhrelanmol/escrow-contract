@@ -68,7 +68,7 @@ describe("Escrow", function () {
             await escrow.connect(depositor).raiseIssue("I Don't like this");
             await expect(
                 escrow.connect(beneficiary).resolveIssue()
-            ).to.revertedWith("Only depositor or arbiter can resolve issue");
+            ).to.revertedWith("Only arbiter or depositor can take this action");
         });
 
         it("should allow both arbiter and depositor to resolve issue", async () => {
@@ -120,7 +120,7 @@ describe("Escrow", function () {
             await escrow.connect(depositor).raiseIssue("I Don't like this");
             await escrow.connect(depositor).resolveIssue();
             await expect(escrow.connect(beneficiary).approve()).to.revertedWith(
-                "Only arbiter or depositor can approve"
+                "Only arbiter or depositor can take this action"
             );
         });
         it("should not approve if issue is raised", async () => {
@@ -175,6 +175,36 @@ describe("Escrow", function () {
                 .sub(gasUsed);
 
             expect(beneficiaryBalanceAfter).to.eq(expectedBal);
+        });
+        it("should not allow depositor to withdraw", async () => {
+            const { escrow, depositor } = await loadFixture(deployEscrow);
+            await escrow.connect(depositor).approve();
+            await expect(escrow.connect(depositor).withdraw()).to.revertedWith(
+                "Only beneficiary can withdraw"
+            );
+        });
+        it("should not allow arbiter to withdraw", async () => {
+            const { escrow, arbiter } = await loadFixture(deployEscrow);
+            await escrow.connect(arbiter).approve();
+            await expect(escrow.connect(arbiter).withdraw()).to.revertedWith(
+                "Only beneficiary can withdraw"
+            );
+        });
+        it("should not allow beneficiary to withdraw if not approved or issue is raised", async () => {
+            const { escrow, beneficiary, depositor } = await loadFixture(
+                deployEscrow
+            );
+            await expect(
+                escrow.connect(beneficiary).withdraw()
+            ).to.revertedWith("Not approved");
+        });
+        it("should set amountToWithdraw to 0 after withdraw", async () => {
+            const { escrow, beneficiary, depositor } = await loadFixture(
+                deployEscrow
+            );
+            await escrow.connect(depositor).approve();
+            await escrow.connect(beneficiary).withdraw();
+            expect(await escrow.amountToWithdraw()).to.eq(0);
         });
     });
 });

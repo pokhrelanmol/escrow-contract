@@ -3,7 +3,7 @@ pragma solidity ^0.8.9;
 
 contract Escrow {
     event Approved(address approver, uint amount);
-    event IssueRaised(string reason);
+    event IssueRaised();
     event IssueResolved();
     address public depositor;
     address public beneficiary;
@@ -26,33 +26,35 @@ contract Escrow {
         require(msg.sender == beneficiary, "Only beneficiary can withdraw");
         _;
     }
-
-    function approve() external {
-        require(isIssueRaised == false, "Issue is raised cannot approve");
-        require(isApproved == false, "Already approved");
+    modifier onlyArbiterOrDepositor() {
         require(
             msg.sender == arbiter || msg.sender == depositor,
-            "Only arbiter or depositor can approve"
+            "Only arbiter or depositor can take this action"
         );
+        _;
+    }
+
+    function approve() external onlyArbiterOrDepositor {
+        require(isIssueRaised == false, "Issue is raised cannot approve");
+        require(isApproved == false, "Already approved");
+
         uint balance = address(this).balance;
         amountToWithdraw = balance;
         isApproved = true;
         emit Approved(msg.sender, balance);
     }
 
-    function raiseIssue(string memory reason) external onlyDepositer {
+    function raiseIssue() external onlyDepositer {
         isIssueRaised = true;
-        emit IssueRaised(reason);
+        emit IssueRaised();
     }
 
-    function resolveIssue() external {
-        require(
-            msg.sender == depositor || msg.sender == arbiter,
-            "Only depositor or arbiter can resolve issue"
-        );
-        require(isIssueRaised == true, "No issue raised");
-        emit IssueResolved();
+    function resolveIssueAndApproveFund() external onlyArbiterOrDepositor {
         isIssueRaised = false;
+        isApproved = true;
+        amountToWithdraw = address(this).balance;
+        emit IssueResolved();
+        emit Approved(msg.sender, amountToWithdraw);
     }
 
     function withdraw() external onlyBeneficiary {
