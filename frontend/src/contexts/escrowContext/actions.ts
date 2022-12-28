@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import { getProvider } from "../../provider";
 import { EscrowContract } from "../../types";
-import { Escrow } from "../../../../typechain-types/Escrow";
+import { Escrow } from "../../typechain-types/Escrow";
 import EscrowArtifacts from "../../artifacts/contracts/Escrow.sol/Escrow.json";
 import { getContract } from "../../helper";
 
