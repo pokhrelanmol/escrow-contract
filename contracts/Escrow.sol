@@ -10,7 +10,7 @@ contract Escrow {
     address public beneficiary;
     address public arbiter;
     bool public isApproved;
-    bool public isIssueRaised;
+    bool public haveIssue;
     uint public amountToWithdraw;
 
     constructor(address _arbiter, address _beneficiary) payable {
@@ -36,9 +36,8 @@ contract Escrow {
     }
 
     function approve() external onlyArbiterOrDepositor {
-        require(isIssueRaised == false, "Issue is raised cannot approve");
+        require(haveIssue == false, "Issue is raised cannot approve");
         require(isApproved == false, "Already approved");
-
         uint balance = address(this).balance;
         amountToWithdraw = balance;
         isApproved = true;
@@ -46,21 +45,18 @@ contract Escrow {
     }
 
     function raiseIssue() external onlyDepositer {
-        isIssueRaised = true;
+        haveIssue = true;
         emit IssueRaised();
     }
 
-    function resolveIssueAndApproveFund() external onlyArbiterOrDepositor {
-        isIssueRaised = false;
-        isApproved = true;
-        amountToWithdraw = address(this).balance;
+    function resolveIssue() external onlyArbiterOrDepositor {
+        haveIssue = false;
         emit IssueResolved();
-        emit Approved(msg.sender, amountToWithdraw);
     }
 
     function withdraw() external onlyBeneficiary {
         require(isApproved == true, "Not approved");
-        require(isIssueRaised == false, "Issue is raised cannot withdraw");
+        require(haveIssue == false, "Issue is raised cannot withdraw");
         require(msg.sender == beneficiary, "Only beneficiary can withdraw");
         (bool success, ) = payable(beneficiary).call{value: amountToWithdraw}(
             ""

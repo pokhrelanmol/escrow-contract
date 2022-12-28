@@ -1,15 +1,12 @@
-import React from "react";
 import { useContracts } from "../contexts/escrowContext/ContractContext";
-import { usePending } from "../contexts/usePending";
-import Button from "./Button";
 import ContractCard from "./cards/ContractCard";
 
 const Contracts = () => {
     const { state } = useContracts();
     return (
         <div className="my-10">
-            <h1 className="text-2xl text-center underline">Recent Escrows</h1>
-            <div className="flex gap-3 flex-shrink mt-4 justify-center">
+            <h1 className="text-2xl text-center underline">Recent Contracts</h1>
+            <div className="grid grid-cols-2 gap-5 mx-5 items-center mt-6 ">
                 {state.length
                     ? state.map(
                           ({
@@ -19,7 +16,7 @@ const Contracts = () => {
                               depositor,
                               arbiter,
                               isApproved,
-                              isIssueRaised,
+                              haveIssue,
                           }) => (
                               <ContractCard
                                   key={address}
@@ -29,7 +26,7 @@ const Contracts = () => {
                                   depositor={depositor}
                                   arbiter={arbiter}
                                   isApproved={isApproved}
-                                  isIssueRaised={isIssueRaised}
+                                  haveIssue={haveIssue}
                                   handleClick={() => {}}
                               />
                           )

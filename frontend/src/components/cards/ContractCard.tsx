@@ -1,9 +1,7 @@
 import React from "react";
 import { useContracts } from "../../contexts/escrowContext/ContractContext";
-import { usePending } from "../../contexts/usePending";
-import { useWallet } from "../../contexts/useWallet";
 import { ContractCardProps, EscrowContract } from "../../types";
-import Button from "../Button";
+import ButtonsToRender from "../ButtonsToRender";
 
 const ContractCard = ({
     address,
@@ -12,31 +10,12 @@ const ContractCard = ({
     depositor,
     arbiter,
     isApproved,
-    isIssueRaised,
+    haveIssue,
     handleClick,
 }: ContractCardProps) => {
-    const { walletAddress } = useWallet();
-    const { pending, setPending } = usePending();
-    const { handleRaiseIssue, handleResolveIssueAndApprove, handleWithdraw } =
-        useContracts();
-    const resolvedBtn =
-        (walletAddress.toLowerCase() === depositor.toLowerCase() &&
-            isApproved) ||
-        (walletAddress.toLowerCase() === arbiter.toLowerCase() && isApproved);
-    const approveBtn =
-        (walletAddress.toLowerCase() === depositor.toLowerCase() &&
-            !isIssueRaised) ||
-        (walletAddress.toLowerCase() === arbiter.toLowerCase() &&
-            !isIssueRaised);
-    const resolveIssueBtn =
-        (walletAddress.toLowerCase() === depositor.toLowerCase() &&
-            isIssueRaised) ||
-        (walletAddress.toLowerCase() === arbiter.toLowerCase() &&
-            isIssueRaised);
-    const withdrawBtn =
-        walletAddress.toLowerCase() === beneficiary.toLowerCase() && isApproved;
+    console.log("havIssue", haveIssue);
     return (
-        <div className="flex flex-col rounded-lg bg-gray-200 p-8">
+        <div className="flex flex-col gap-1 rounded-lg bg-gray-200 p-7">
             <div className="text-orange-400 text-lg">
                 Contract Address :{" "}
                 <span className="text-gray-600 pl-3 text-base">
@@ -69,14 +48,17 @@ const ContractCard = ({
             </div>
             <div className="text-orange-400 text-lg">
                 Amount :{" "}
-                <span className="text-gray-600 pl-3 text-base"> {amount} </span>
+                <span className="text-gray-600 pl-3 text-base">
+                    {" "}
+                    {amount} ETH
+                </span>
             </div>
-            {isIssueRaised ? (
+            {haveIssue ? (
                 <div className="text-orange-400 text-lg">
                     Status :{" "}
                     <span className="text-gray-600 pl-3 text-base">
                         {" "}
-                        Issue is Raised
+                        ⚔️ Issue is Raised
                     </span>
                 </div>
             ) : isApproved ? (
@@ -87,7 +69,7 @@ const ContractCard = ({
                         ✅ Approved
                     </span>
                 </div>
-            ) : !isIssueRaised && !isApproved ? (
+            ) : !haveIssue && !isApproved ? (
                 <div className="text-orange-400 text-lg">
                     Status :{" "}
                     <span className="text-gray-600 pl-3 text-base">
@@ -96,58 +78,16 @@ const ContractCard = ({
                     </span>
                 </div>
             ) : null}
-            {resolvedBtn ? (
-                <div>
-                    <div className="text-center">
-                        <Button disabled={true} handleClick={handleClick}>
-                            ✅ Successfully Approved
-                        </Button>
-                    </div>
-                </div>
-            ) : resolveIssueBtn ? (
-                <div>
-                    <div className="text-center">
-                        <Button
-                            handleClick={() =>
-                                handleResolveIssueAndApprove(address)
-                            }
-                        >
-                            Resolve Issue
-                        </Button>
-                    </div>
-                </div>
-            ) : withdrawBtn ? (
-                <div>
-                    <div className="text-center">
-                        <Button handleClick={() => handleWithdraw(address)}>
-                            Withdraw
-                        </Button>
-                    </div>
-                </div>
-            ) : approveBtn ? (
-                <div className="flex gap-2 justify-center">
-                    <div>
-                        <div className="text-center">
-                            <Button
-                                handleClick={() =>
-                                    handleResolveIssueAndApprove(address)
-                                }
-                            >
-                                Approve
-                            </Button>
-                        </div>
-                    </div>
-                    <div>
-                        <div className="text-center">
-                            <Button
-                                handleClick={() => handleRaiseIssue(address)}
-                            >
-                                Raise Issue
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-            ) : null}
+            <ButtonsToRender
+                address={address}
+                beneficiary={beneficiary}
+                amount={amount}
+                depositor={depositor}
+                arbiter={arbiter}
+                isApproved={isApproved}
+                haveIssue={haveIssue}
+                handleClick={handleClick}
+            />
         </div>
     );
 };

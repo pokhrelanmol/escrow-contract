@@ -15,7 +15,7 @@ export interface EscrowContract {
     depositor: string;
     amount: number;
     isApproved: boolean;
-    isIssueRaised: boolean;
+    haveIssue: boolean;
 }
 export type EscrowState = EscrowContract[];
 
@@ -27,7 +27,8 @@ export interface EscrowContractProps {
         amount: number
     ) => Promise<void>;
     handleRaiseIssue: (address: string) => Promise<void>;
-    handleResolveIssueAndApprove: (address: string) => Promise<void>;
+    handleResolveIssue: (address: string) => Promise<void>;
+    handleApprove: (address: string) => Promise<void>;
     handleWithdraw: (address: string) => Promise<void>;
 }
 export interface ContractCardProps extends EscrowContract {

@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useContracts } from "../contexts/escrowContext/ContractContext";
 import { usePending } from "../contexts/usePending";
+import { useWallet } from "../contexts/useWallet";
 interface FormData {
     arbiter: string;
     beneficiary: string;
@@ -13,7 +14,7 @@ interface FormData {
 const EscrowForm = () => {
     const { handleDeployContract } = useContracts();
     const [formData, setFormData] = useState({} as FormData);
-    const { pending, setPending } = usePending();
+    const { walletAddress } = useWallet();
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
@@ -24,8 +25,8 @@ const EscrowForm = () => {
         await handleDeployContract(arbiter, beneficiary, amount);
     };
     return (
-        <div className="flex flex-col max-w-3xl mx-auto mt-20 bg-gray-300 p-10 rounded-lg">
-            <h1 className="text-center text-2xl font-semibold">New Escrow</h1>
+        <div className="flex flex-col max-w-3xl mx-auto  bg-gray-300 p-10 rounded-lg">
+            <h1 className="text-center text-2xl font-semibold">New Contract</h1>
 
             <form className="flex flex-col space-y-4">
                 <div className="flex flex-col">
@@ -59,7 +60,13 @@ const EscrowForm = () => {
                     />
                 </div>
                 <div className="text-center">
-                    <Button handleClick={handleDeploy}>Deploy</Button>
+                    {!walletAddress ? (
+                        <div className="text-center text-red-700 text-2xl">
+                            Pease connect Your Wallet First
+                        </div>
+                    ) : (
+                        <Button handleClick={handleDeploy}>Deploy</Button>
+                    )}
                 </div>
             </form>
         </div>

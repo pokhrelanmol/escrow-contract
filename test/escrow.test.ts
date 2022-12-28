@@ -42,22 +42,18 @@ describe("Escrow", function () {
     describe("Raise Issue", () => {
         it("Only allow depositor to raise issue", async () => {
             const { escrow, arbiter } = await loadFixture(deployEscrow);
-            const tx = escrow.connect(arbiter).raiseIssue("I Don't like this");
+            const tx = escrow.connect(arbiter).raiseIssue();
             await expect(tx).to.revertedWith("Only depositor can raise issue");
         });
         it("Should set issueRaised to true", async () => {
             const { escrow, depositor } = await loadFixture(deployEscrow);
-            await escrow.connect(depositor).raiseIssue("I Don't like this");
-            expect(await escrow.isIssueRaised()).to.eq(true);
+            await escrow.connect(depositor).raiseIssue();
+            expect(await escrow.haveIssue()).to.eq(true);
         });
         it("Should emit an event when issue is raised", async () => {
             const { escrow, depositor } = await loadFixture(deployEscrow);
-            const tx = await escrow
-                .connect(depositor)
-                .raiseIssue("I Don't like this");
-            await expect(tx)
-                .to.emit(escrow, "IssueRaised")
-                .withArgs("I Don't like this");
+            const tx = await escrow.connect(depositor).raiseIssue();
+            await expect(tx).to.emit(escrow, "IssueRaised").withArgs();
         });
     });
     describe("Resolve Issue", () => {
@@ -65,7 +61,7 @@ describe("Escrow", function () {
             const { escrow, beneficiary, depositor } = await loadFixture(
                 deployEscrow
             );
-            await escrow.connect(depositor).raiseIssue("I Don't like this");
+            await escrow.connect(depositor).raiseIssue();
             await expect(
                 escrow.connect(beneficiary).resolveIssue()
             ).to.revertedWith("Only arbiter or depositor can take this action");
@@ -75,23 +71,23 @@ describe("Escrow", function () {
             const { escrow, depositor, arbiter } = await loadFixture(
                 deployEscrow
             );
-            await escrow.connect(depositor).raiseIssue("I Don't like this");
+            await escrow.connect(depositor).raiseIssue();
             await escrow.connect(depositor).resolveIssue();
-            await escrow.connect(depositor).raiseIssue("I Don't like this");
+            await escrow.connect(depositor).raiseIssue();
             await escrow.connect(arbiter).resolveIssue();
         });
 
         it("Should set issueRaised to false", async () => {
             const { escrow, depositor } = await loadFixture(deployEscrow);
 
-            await escrow.connect(depositor).raiseIssue("I Don't like this");
+            await escrow.connect(depositor).raiseIssue();
             await escrow.connect(depositor).resolveIssue();
-            expect(await escrow.isIssueRaised()).to.eq(false);
+            expect(await escrow.haveIssue()).to.eq(false);
         });
         it("Should emit an event when issue is resolved", async () => {
             const { escrow, depositor } = await loadFixture(deployEscrow);
 
-            await escrow.connect(depositor).raiseIssue("I Don't like this");
+            await escrow.connect(depositor).raiseIssue();
             await expect(escrow.connect(depositor).resolveIssue()).to.emit(
                 escrow,
                 "IssueResolved"
@@ -101,7 +97,7 @@ describe("Escrow", function () {
     describe("Approve", () => {
         it("should allow  depositor to approve", async () => {
             const { escrow, depositor } = await loadFixture(deployEscrow);
-            await escrow.connect(depositor).raiseIssue("I Don't like this");
+            await escrow.connect(depositor).raiseIssue();
             await escrow.connect(depositor).resolveIssue();
             await escrow.connect(depositor).approve();
         });
@@ -109,7 +105,7 @@ describe("Escrow", function () {
             const { escrow, depositor, arbiter } = await loadFixture(
                 deployEscrow
             );
-            await escrow.connect(depositor).raiseIssue("I Don't like this");
+            await escrow.connect(depositor).raiseIssue();
             await escrow.connect(depositor).resolveIssue();
             await escrow.connect(arbiter).approve();
         });
@@ -117,7 +113,7 @@ describe("Escrow", function () {
             const { escrow, depositor, beneficiary } = await loadFixture(
                 deployEscrow
             );
-            await escrow.connect(depositor).raiseIssue("I Don't like this");
+            await escrow.connect(depositor).raiseIssue();
             await escrow.connect(depositor).resolveIssue();
             await expect(escrow.connect(beneficiary).approve()).to.revertedWith(
                 "Only arbiter or depositor can take this action"
@@ -125,14 +121,14 @@ describe("Escrow", function () {
         });
         it("should not approve if issue is raised", async () => {
             const { escrow, depositor } = await loadFixture(deployEscrow);
-            await escrow.connect(depositor).raiseIssue("I Don't like this");
+            await escrow.connect(depositor).raiseIssue();
             await expect(escrow.connect(depositor).approve()).to.revertedWith(
                 "Issue is raised cannot approve"
             );
         });
         it("should approve and set isApproved to true", async () => {
             const { escrow, depositor } = await loadFixture(deployEscrow);
-            await escrow.connect(depositor).raiseIssue("I Don't like this");
+            await escrow.connect(depositor).raiseIssue();
             await escrow.connect(depositor).resolveIssue();
             await escrow.connect(depositor).approve();
             expect(await escrow.isApproved()).to.eq(true);
@@ -141,7 +137,7 @@ describe("Escrow", function () {
             const { escrow, depositor, amount } = await loadFixture(
                 deployEscrow
             );
-            await escrow.connect(depositor).raiseIssue("I Don't like this");
+            await escrow.connect(depositor).raiseIssue();
             await escrow.connect(depositor).resolveIssue();
             await expect(escrow.connect(depositor).approve())
                 .to.emit(escrow, "Approved")
@@ -151,7 +147,7 @@ describe("Escrow", function () {
             const { escrow, depositor, amount } = await loadFixture(
                 deployEscrow
             );
-            await escrow.connect(depositor).raiseIssue("I Don't like this");
+            await escrow.connect(depositor).raiseIssue();
             await escrow.connect(depositor).resolveIssue();
             await escrow.connect(depositor).approve();
             expect(await escrow.amountToWithdraw()).to.eq(amount);

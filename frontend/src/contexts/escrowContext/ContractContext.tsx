@@ -11,6 +11,7 @@ import { initialState } from "./state";
 import { escrowReducer } from "./reducer";
 import {
     actionTypes,
+    approve,
     deployContract,
     raiseIssue,
     resolveIssue,
@@ -44,11 +45,12 @@ export const ContractProvider = ({ children }: Children) => {
     ) => {
         setPending(true);
         const payload = await deployContract(arbiter, beneficiary, amount);
+        setPending(false);
         dispatch({
             type: actionTypes.DEPLOY_CONTRACT,
             payload,
         });
-        setPending(false);
+        // setPending(false);
 
         toast.success("Escrow deployed successfully");
         localStorage.setItem("escrows", stringify([...state, payload]));
@@ -66,17 +68,29 @@ export const ContractProvider = ({ children }: Children) => {
             toast.success("Issue Raised successfully");
         });
     };
-    const handleResolveIssueAndApprove = async (contractAddress: string) => {
+    const handleResolveIssue = async (contractAddress: string) => {
         setPending(true);
         const contract = await resolveIssue(contractAddress);
         contract.on("IssueResolved", () => {
             dispatch({
-                type: actionTypes.RESOLVE_ISSUE_AND_APPROVE,
+                type: actionTypes.RESOLVE_ISSUE,
                 payload: contractAddress,
             });
             setPending(false);
 
-            toast.success("Approved and Issue Resolved successfully");
+            toast.success("Issue Resolved successfully");
+        });
+    };
+    const handleApprove = async (contractAddress: string) => {
+        setPending(true);
+        const contract = await approve(contractAddress);
+        contract.on("Approved", () => {
+            dispatch({
+                type: actionTypes.APPROVE,
+                payload: contractAddress,
+            });
+            setPending(false);
+            toast.success(" 🎊 Approved successfully");
         });
     };
 
@@ -99,7 +113,8 @@ export const ContractProvider = ({ children }: Children) => {
             value={{
                 state,
                 handleDeployContract,
-                handleResolveIssueAndApprove,
+                handleResolveIssue,
+                handleApprove,
                 handleRaiseIssue,
                 handleWithdraw,
             }}

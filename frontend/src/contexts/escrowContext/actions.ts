@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import { getProvider } from "../../provider";
 import { EscrowContract } from "../../types";
-
+import { Escrow } from "../../../../typechain-types/Escrow";
 import EscrowArtifacts from "../../artifacts/contracts/Escrow.sol/Escrow.json";
 import { getContract } from "../../helper";
 
@@ -9,7 +9,8 @@ export enum actionTypes {
     DEPLOY_CONTRACT,
     SET_INITIAL_STATE,
     RAISE_ISSUE,
-    RESOLVE_ISSUE_AND_APPROVE,
+    RESOLVE_ISSUE,
+    APPROVE,
     WITHDRAW,
 }
 export type SetInitialState = {
@@ -24,11 +25,14 @@ export type RaiseIssue = {
     type: actionTypes.RAISE_ISSUE;
     payload: string;
 };
-export type ResolveIssueAndApproveFund = {
-    type: actionTypes.RESOLVE_ISSUE_AND_APPROVE;
+export type ResolveIssue = {
+    type: actionTypes.RESOLVE_ISSUE;
     payload: string;
 };
-
+export type Approve = {
+    type: actionTypes.APPROVE;
+    payload: string;
+};
 export type Withdraw = {
     type: actionTypes.WITHDRAW;
     payload: string;
@@ -38,7 +42,8 @@ export type EscrowAction =
     | SetInitialState
     | DeployContract
     | RaiseIssue
-    | ResolveIssueAndApproveFund
+    | ResolveIssue
+    | Approve
     | Withdraw;
 
 export const deployContract = async (
@@ -56,34 +61,38 @@ export const deployContract = async (
     const contract = await factory.deploy(arbiter, beneficiary, {
         value: ethers.utils.parseEther(amount.toString()),
     });
-    contract.deployed();
+    await contract.deployTransaction.wait(1);
+    await contract.deployed();
     const payload = {
         address: contract.address,
-        contractInstance: contract,
         depositor: await signer.getAddress(),
         amount,
         arbiter,
         beneficiary,
         isApproved: false,
-        isIssueRaised: false,
+        haveIssue: false,
     };
     return payload;
 };
 export const raiseIssue = async (address: string) => {
-    const contract = await getContract(address);
+    const contract = (await getContract(address)) as Escrow;
 
     const tx = await contract.raiseIssue();
     return contract;
 };
 export const resolveIssue = async (address: string) => {
-    const contract = await getContract(address);
-
-    const tx = await contract.resolveIssueAndApproveFund();
+    const contract: Escrow = (await getContract(address)) as Escrow;
+    const tx = await contract.resolveIssue();
 
     return contract;
 };
+export const approve = async (address: string) => {
+    const contract: Escrow = (await getContract(address)) as Escrow;
+    const tx = await contract.approve();
+    return contract;
+};
 export const withdraw = async (address: string) => {
-    const contract = await getContract(address);
+    const contract = (await getContract(address)) as Escrow;
     const tx = await contract.withdraw();
 
     return contract;

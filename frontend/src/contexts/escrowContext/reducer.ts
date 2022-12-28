@@ -17,31 +17,45 @@ export const escrowReducer = (
             return _state;
 
         case actionTypes.RAISE_ISSUE:
-            const newState = state.map((contract) => {
+            const stateAfterRaiseIssue = state.map((contract) => {
                 if (contract.address === action.payload) {
-                    return { ...contract, isIssueRaised: true };
+                    return { ...contract, haveIssue: true };
                 }
                 return contract;
             });
-            localStorage.setItem("escrows", stringify(newState));
-            return newState;
-        case actionTypes.RESOLVE_ISSUE_AND_APPROVE:
-            const _newState = state.map((contract) => {
+            localStorage.setItem("escrows", stringify(stateAfterRaiseIssue));
+            return stateAfterRaiseIssue;
+        case actionTypes.RESOLVE_ISSUE:
+            const stateAfterResolve = state.map((contract) => {
                 if (contract.address === action.payload) {
                     return {
                         ...contract,
-                        isIssueRaised: false,
+                        haveIssue: false,
+                    };
+                }
+                return contract;
+            });
+            localStorage.setItem("escrows", stringify(stateAfterResolve));
+            return stateAfterResolve;
+        case actionTypes.APPROVE:
+            const stateAfterApprove = state.map((contract) => {
+                if (contract.address === action.payload) {
+                    return {
+                        ...contract,
                         isApproved: true,
                     };
                 }
                 return contract;
             });
-            localStorage.setItem("escrows", stringify(_newState));
-            return _newState;
+            localStorage.setItem("escrows", stringify(stateAfterApprove));
+            return stateAfterApprove;
+
         case actionTypes.WITHDRAW:
-            return state.filter(
+            const stateAfterWithdrawl = state.filter(
                 (contract) => contract.address !== action.payload
             );
+            localStorage.setItem("escrows", stringify(stateAfterWithdrawl));
+            return stateAfterWithdrawl;
 
         default:
             return state;

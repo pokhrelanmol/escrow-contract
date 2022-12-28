@@ -5,6 +5,7 @@ import { truncateAddress } from "../helper";
 import { getSignerAddress } from "../provider";
 import Button from "./Button";
 import Pending from "./Pending";
+import logo from "../assets/logo.png";
 
 const Header = () => {
     const { walletAddress, setWalletAddress } = useWallet();
@@ -32,7 +33,7 @@ const Header = () => {
     }, []);
     return (
         <div className="flex justify-around items-center">
-            <div>Escrow Frontend</div>
+            <img src={logo} className=" w-36 h-36" alt="Logo" />
             <div>
                 {pending ? (
                     <Pending />

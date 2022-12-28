@@ -22,7 +22,7 @@ export const WalletProvider = ({ children }: Children) => {
     }, []);
     if (provider) {
         provider.on("accountChanged", (address: string) => {
-            console.log(address);
+            window.location.reload();
         });
     }
     return (
