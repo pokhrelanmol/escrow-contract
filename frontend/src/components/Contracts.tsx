@@ -1,11 +1,11 @@
 import React from "react";
 import { useContracts } from "../contexts/escrowContext/ContractContext";
+import { usePending } from "../contexts/usePending";
 import Button from "./Button";
 import ContractCard from "./cards/ContractCard";
 
 const Contracts = () => {
     const { state } = useContracts();
-
     return (
         <div className="my-10">
             <h1 className="text-2xl text-center underline">Recent Escrows</h1>
@@ -20,7 +20,6 @@ const Contracts = () => {
                               arbiter,
                               isApproved,
                               isIssueRaised,
-                              contractInstance,
                           }) => (
                               <ContractCard
                                   key={address}
@@ -29,7 +28,6 @@ const Contracts = () => {
                                   beneficiary={beneficiary}
                                   depositor={depositor}
                                   arbiter={arbiter}
-                                  contractInstance={contractInstance}
                                   isApproved={isApproved}
                                   isIssueRaised={isIssueRaised}
                                   handleClick={() => {}}

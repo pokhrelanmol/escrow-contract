@@ -1,12 +1,10 @@
 import { ethers } from "ethers";
 import React, { useState } from "react";
-import EscrowArtifacts from "../artifacts/contracts/Escrow.sol/Escrow.json";
-import { getProvider } from "../provider";
 import Button from "./Button";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useContracts } from "../contexts/escrowContext/ContractContext";
-import { useLoading } from "../contexts/useLoading";
+import { usePending } from "../contexts/usePending";
 interface FormData {
     arbiter: string;
     beneficiary: string;
@@ -15,7 +13,7 @@ interface FormData {
 const EscrowForm = () => {
     const { handleDeployContract } = useContracts();
     const [formData, setFormData] = useState({} as FormData);
-    const { loading, setLoading } = useLoading();
+    const { pending, setPending } = usePending();
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
@@ -24,7 +22,6 @@ const EscrowForm = () => {
         e.preventDefault();
         const { arbiter, beneficiary, amount } = formData;
         await handleDeployContract(arbiter, beneficiary, amount);
-        toast.success("Escrow deployed successfully");
     };
     return (
         <div className="flex flex-col max-w-3xl mx-auto mt-20 bg-gray-300 p-10 rounded-lg">
@@ -62,12 +59,9 @@ const EscrowForm = () => {
                     />
                 </div>
                 <div className="text-center">
-                    <Button handleClick={handleDeploy}>
-                        {loading ? "Deploying..." : "Deploy"}
-                    </Button>
+                    <Button handleClick={handleDeploy}>Deploy</Button>
                 </div>
             </form>
-            <ToastContainer />
         </div>
     );
 };

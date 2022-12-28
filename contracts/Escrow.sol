@@ -5,6 +5,7 @@ contract Escrow {
     event Approved(address approver, uint amount);
     event IssueRaised();
     event IssueResolved();
+    event Withdrawn(address beneficiary, uint amount);
     address public depositor;
     address public beneficiary;
     address public arbiter;
@@ -66,6 +67,7 @@ contract Escrow {
         );
         require(success, "Transfer failed");
         amountToWithdraw = 0;
+        emit Withdrawn(beneficiary, amountToWithdraw);
     }
 
     /***********

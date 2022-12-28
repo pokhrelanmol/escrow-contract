@@ -2,18 +2,18 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import { ContractProvider } from "./contexts/escrowContext/ContractContext";
-import { LoadingProvider } from "./contexts/useLoading";
+import { PendingProvider } from "./contexts/usePending";
 import { WalletProvider } from "./contexts/useWallet";
 import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <React.StrictMode>
-        <WalletProvider>
-            <ContractProvider>
-                <LoadingProvider>
+        <PendingProvider>
+            <WalletProvider>
+                <ContractProvider>
                     <App />
-                </LoadingProvider>
-            </ContractProvider>
-        </WalletProvider>
+                </ContractProvider>
+            </WalletProvider>
+        </PendingProvider>
     </React.StrictMode>
 );

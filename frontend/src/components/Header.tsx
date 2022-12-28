@@ -1,11 +1,14 @@
 import React, { useEffect } from "react";
+import { usePending } from "../contexts/usePending";
 import { useWallet } from "../contexts/useWallet";
 import { truncateAddress } from "../helper";
 import { getSignerAddress } from "../provider";
 import Button from "./Button";
+import Pending from "./Pending";
 
 const Header = () => {
     const { walletAddress, setWalletAddress } = useWallet();
+    const { pending } = usePending();
 
     const connectWallet = async () => {
         const ethereum = (window as any).ethereum;
@@ -31,7 +34,9 @@ const Header = () => {
         <div className="flex justify-around items-center">
             <div>Escrow Frontend</div>
             <div>
-                {walletAddress ? (
+                {pending ? (
+                    <Pending />
+                ) : walletAddress ? (
                     <Button disabled={true}>
                         {truncateAddress(walletAddress)}
                     </Button>

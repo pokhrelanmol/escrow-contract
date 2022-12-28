@@ -16,7 +16,6 @@ export interface EscrowContract {
     amount: number;
     isApproved: boolean;
     isIssueRaised: boolean;
-    contractInstance?: Contract;
 }
 export type EscrowState = EscrowContract[];
 

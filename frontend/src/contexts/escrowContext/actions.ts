@@ -54,7 +54,7 @@ export const deployContract = async (
         signer
     );
     const contract = await factory.deploy(arbiter, beneficiary, {
-        value: amount,
+        value: ethers.utils.parseEther(amount.toString()),
     });
     contract.deployed();
     const payload = {
@@ -71,15 +71,22 @@ export const deployContract = async (
 };
 export const raiseIssue = async (address: string) => {
     const contract = await getContract(address);
+
     const tx = await contract.raiseIssue();
+    return contract;
 };
 export const resolveIssue = async (address: string) => {
     const contract = await getContract(address);
+
     const tx = await contract.resolveIssueAndApproveFund();
+
+    return contract;
 };
 export const withdraw = async (address: string) => {
     const contract = await getContract(address);
     const tx = await contract.withdraw();
+
+    return contract;
 };
 // TODO: resolveIssue
 // TODO: withdraw

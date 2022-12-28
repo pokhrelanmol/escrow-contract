@@ -1,5 +1,6 @@
 import React from "react";
 import { useContracts } from "../../contexts/escrowContext/ContractContext";
+import { usePending } from "../../contexts/usePending";
 import { useWallet } from "../../contexts/useWallet";
 import { ContractCardProps, EscrowContract } from "../../types";
 import Button from "../Button";
@@ -15,6 +16,7 @@ const ContractCard = ({
     handleClick,
 }: ContractCardProps) => {
     const { walletAddress } = useWallet();
+    const { pending, setPending } = usePending();
     const { handleRaiseIssue, handleResolveIssueAndApprove, handleWithdraw } =
         useContracts();
     const resolvedBtn =
