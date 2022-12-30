@@ -39,6 +39,7 @@ export interface EscrowInterface extends utils.Interface {
     "getDepositor()": FunctionFragment;
     "haveIssue()": FunctionFragment;
     "isApproved()": FunctionFragment;
+    "isIssueRaised()": FunctionFragment;
     "raiseIssue()": FunctionFragment;
     "resolveIssue()": FunctionFragment;
     "withdraw()": FunctionFragment;
@@ -57,6 +58,7 @@ export interface EscrowInterface extends utils.Interface {
       | "getDepositor"
       | "haveIssue"
       | "isApproved"
+      | "isIssueRaised"
       | "raiseIssue"
       | "resolveIssue"
       | "withdraw"
@@ -95,6 +97,10 @@ export interface EscrowInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "isIssueRaised",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "raiseIssue",
     values?: undefined
   ): string;
@@ -127,6 +133,10 @@ export interface EscrowInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "haveIssue", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "isApproved", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "isIssueRaised",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "raiseIssue", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "resolveIssue",
@@ -230,6 +240,8 @@ export interface Escrow extends BaseContract {
 
     isApproved(overrides?: CallOverrides): Promise<[boolean]>;
 
+    isIssueRaised(overrides?: CallOverrides): Promise<[boolean]>;
+
     raiseIssue(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
@@ -267,6 +279,8 @@ export interface Escrow extends BaseContract {
 
   isApproved(overrides?: CallOverrides): Promise<boolean>;
 
+  isIssueRaised(overrides?: CallOverrides): Promise<boolean>;
+
   raiseIssue(
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
@@ -301,6 +315,8 @@ export interface Escrow extends BaseContract {
     haveIssue(overrides?: CallOverrides): Promise<boolean>;
 
     isApproved(overrides?: CallOverrides): Promise<boolean>;
+
+    isIssueRaised(overrides?: CallOverrides): Promise<boolean>;
 
     raiseIssue(overrides?: CallOverrides): Promise<void>;
 
@@ -354,6 +370,8 @@ export interface Escrow extends BaseContract {
 
     isApproved(overrides?: CallOverrides): Promise<BigNumber>;
 
+    isIssueRaised(overrides?: CallOverrides): Promise<BigNumber>;
+
     raiseIssue(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
@@ -391,6 +409,8 @@ export interface Escrow extends BaseContract {
     haveIssue(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     isApproved(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    isIssueRaised(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     raiseIssue(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
