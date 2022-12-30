@@ -6,12 +6,14 @@ contract Escrow {
     event IssueRaised();
     event IssueResolved();
     event Withdrawn(address beneficiary, uint amount);
-    address public depositor;
-    address public beneficiary;
-    address public arbiter;
+    address public immutable depositor;
+    address public immutable beneficiary;
+    address public immutable  arbiter;
     bool public isApproved;
     bool public haveIssue;
+    bool public isIssueRaised;
     uint public amountToWithdraw;
+    
 
     constructor(address _arbiter, address _beneficiary) payable {
         depositor = msg.sender;
@@ -38,6 +40,9 @@ contract Escrow {
     function approve() external onlyArbiterOrDepositor {
         require(haveIssue == false, "Issue is raised cannot approve");
         require(isApproved == false, "Already approved");
+        if(msg.sender == arbiter){
+            require(isIssueRaised == true, "Arbiter cannot approve if issue is not raised");
+        }
         uint balance = address(this).balance;
         amountToWithdraw = balance;
         isApproved = true;
@@ -46,10 +51,12 @@ contract Escrow {
 
     function raiseIssue() external onlyDepositer {
         haveIssue = true;
+        isIssueRaised = true;
         emit IssueRaised();
     }
 
     function resolveIssue() external onlyArbiterOrDepositor {
+        require(haveIssue,"Issue is not raised");
         haveIssue = false;
         emit IssueResolved();
     }

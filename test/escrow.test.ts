@@ -1,6 +1,7 @@
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
 import { BigNumber } from "ethers";
+import { isBytes } from "ethers/lib/utils";
 import { ethers } from "hardhat";
 
 describe("Escrow", function () {
@@ -77,7 +78,7 @@ describe("Escrow", function () {
             await escrow.connect(arbiter).resolveIssue();
         });
 
-        it("Should set issueRaised to false", async () => {
+        it("Should set haveIssue to false", async () => {
             const { escrow, depositor } = await loadFixture(deployEscrow);
 
             await escrow.connect(depositor).raiseIssue();
@@ -93,6 +94,12 @@ describe("Escrow", function () {
                 "IssueResolved"
             );
         });
+        it("should not allow resolve of issue is not raised", async () => {
+            const { escrow, depositor } = await loadFixture(deployEscrow);
+            await expect(
+                escrow.connect(depositor).resolveIssue()
+            ).to.revertedWith("Issue is not raised");
+        });
     });
     describe("Approve", () => {
         it("should allow  depositor to approve", async () => {
@@ -101,7 +108,7 @@ describe("Escrow", function () {
             await escrow.connect(depositor).resolveIssue();
             await escrow.connect(depositor).approve();
         });
-        it("should not allow arbiter to approve", async () => {
+        it("should allow  arbiter to approve if issue is raised", async () => {
             const { escrow, depositor, arbiter } = await loadFixture(
                 deployEscrow
             );
@@ -109,6 +116,13 @@ describe("Escrow", function () {
             await escrow.connect(depositor).resolveIssue();
             await escrow.connect(arbiter).approve();
         });
+        it("should not allow arbiter to approve if issue is not raised", async () => {
+            const { escrow, arbiter } = await loadFixture(deployEscrow);
+            await expect(escrow.connect(arbiter).approve()).to.revertedWith(
+                "Arbiter cannot approve if issue is not raised"
+            );
+        });
+
         it("should not allow beneficiary to approve", async () => {
             const { escrow, depositor, beneficiary } = await loadFixture(
                 deployEscrow
@@ -180,7 +194,11 @@ describe("Escrow", function () {
             );
         });
         it("should not allow arbiter to withdraw", async () => {
-            const { escrow, arbiter } = await loadFixture(deployEscrow);
+            const { escrow, arbiter, depositor } = await loadFixture(
+                deployEscrow
+            );
+            await escrow.connect(depositor).raiseIssue();
+            await escrow.connect(depositor).resolveIssue();
             await escrow.connect(arbiter).approve();
             await expect(escrow.connect(arbiter).withdraw()).to.revertedWith(
                 "Only beneficiary can withdraw"

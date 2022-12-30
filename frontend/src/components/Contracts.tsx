@@ -17,8 +17,10 @@ const Contracts = () => {
                               arbiter,
                               isApproved,
                               haveIssue,
+                              isIssueRaised,
                           }) => (
                               <ContractCard
+                                  isIssueRaised={isIssueRaised}
                                   key={address}
                                   address={address}
                                   amount={amount}

@@ -1,3 +1,4 @@
+import { copyFileSync } from "fs";
 import React from "react";
 import { useContracts } from "../contexts/escrowContext/ContractContext";
 import { useWallet } from "../contexts/useWallet";
@@ -12,6 +13,7 @@ const ButtonsToRender = ({
     arbiter,
     isApproved,
     haveIssue,
+    isIssueRaised,
     handleClick,
 }: ContractCardProps) => {
     const { walletAddress } = useWallet();
@@ -19,15 +21,22 @@ const ButtonsToRender = ({
         (walletAddress?.toLowerCase() === depositor.toLowerCase() &&
             isApproved) ||
         (walletAddress?.toLowerCase() === arbiter.toLowerCase() && isApproved);
-    const approveBtn =
-        (walletAddress?.toLowerCase() === depositor.toLowerCase() &&
-            !haveIssue) ||
-        (walletAddress?.toLowerCase() === arbiter.toLowerCase() && !haveIssue);
-    console.log(approveBtn);
+    const raiseIssueBtn =
+        walletAddress?.toLowerCase() === depositor.toLowerCase();
     const resolveIssueBtn =
         (walletAddress?.toLowerCase() === depositor.toLowerCase() &&
             haveIssue) ||
         (walletAddress?.toLowerCase() === arbiter.toLowerCase() && haveIssue);
+    const approveBtnForDepositor =
+        walletAddress?.toLowerCase() === depositor.toLowerCase() &&
+        !haveIssue &&
+        raiseIssueBtn;
+    const approveBtnForArbiter =
+        walletAddress?.toLowerCase() === arbiter.toLowerCase() &&
+        isIssueRaised &&
+        walletAddress?.toLowerCase() === arbiter.toLowerCase() &&
+        !haveIssue;
+    console.log("isIssueRaised", isIssueRaised);
     const withdrawBtn =
         walletAddress?.toLowerCase() === beneficiary.toLowerCase() &&
         isApproved;
@@ -67,7 +76,7 @@ const ButtonsToRender = ({
                         </Button>
                     </div>
                 </div>
-            ) : approveBtn ? (
+            ) : approveBtnForDepositor ? (
                 <div className="flex gap-2 justify-center">
                     <div>
                         <div className="text-center">
@@ -84,6 +93,14 @@ const ButtonsToRender = ({
                                 Raise Issue
                             </Button>
                         </div>
+                    </div>
+                </div>
+            ) : approveBtnForArbiter ? (
+                <div className="flex gap-2 justify-center">
+                    <div className="text-center">
+                        <Button handleClick={() => handleApprove(address)}>
+                            Approve
+                        </Button>
                     </div>
                 </div>
             ) : null}

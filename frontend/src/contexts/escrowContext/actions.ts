@@ -70,6 +70,7 @@ export const deployContract = async (
         arbiter,
         beneficiary,
         isApproved: false,
+        isIssueRaised: false,
         haveIssue: false,
     };
     return payload;

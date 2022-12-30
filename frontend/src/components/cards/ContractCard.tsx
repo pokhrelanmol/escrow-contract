@@ -11,6 +11,7 @@ const ContractCard = ({
     arbiter,
     isApproved,
     haveIssue,
+    isIssueRaised,
     handleClick,
 }: ContractCardProps) => {
     console.log("havIssue", haveIssue);
@@ -86,6 +87,7 @@ const ContractCard = ({
                 arbiter={arbiter}
                 isApproved={isApproved}
                 haveIssue={haveIssue}
+                isIssueRaised={isIssueRaised}
                 handleClick={handleClick}
             />
         </div>
