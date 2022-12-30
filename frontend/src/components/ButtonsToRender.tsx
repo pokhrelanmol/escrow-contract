@@ -1,5 +1,3 @@
-import { copyFileSync } from "fs";
-import React from "react";
 import { useContracts } from "../contexts/escrowContext/ContractContext";
 import { useWallet } from "../contexts/useWallet";
 import { ContractCardProps } from "../types";
@@ -8,7 +6,6 @@ import Button from "./Button";
 const ButtonsToRender = ({
     address,
     beneficiary,
-    amount,
     depositor,
     arbiter,
     isApproved,
@@ -36,7 +33,6 @@ const ButtonsToRender = ({
         isIssueRaised &&
         walletAddress?.toLowerCase() === arbiter.toLowerCase() &&
         !haveIssue;
-    console.log("isIssueRaised", isIssueRaised);
     const withdrawBtn =
         walletAddress?.toLowerCase() === beneficiary.toLowerCase() &&
         isApproved;

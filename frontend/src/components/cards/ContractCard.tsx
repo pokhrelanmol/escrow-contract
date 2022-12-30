@@ -1,6 +1,4 @@
-import React from "react";
-import { useContracts } from "../../contexts/escrowContext/ContractContext";
-import { ContractCardProps, EscrowContract } from "../../types";
+import { ContractCardProps } from "../../types";
 import ButtonsToRender from "../ButtonsToRender";
 
 const ContractCard = ({

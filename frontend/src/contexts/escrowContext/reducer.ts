@@ -1,6 +1,6 @@
-import { EscrowContract, EscrowState } from "../../types";
+import { EscrowState } from "../../types";
 import { EscrowAction, actionTypes } from "./actions";
-import { parse, stringify } from "flatted";
+import { stringify } from "flatted";
 export const escrowReducer = (
     state: EscrowState,
     action: EscrowAction

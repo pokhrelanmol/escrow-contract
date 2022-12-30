@@ -1,11 +1,4 @@
-import { ethers } from "ethers";
-import {
-    createContext,
-    useContext,
-    useEffect,
-    useReducer,
-    useState,
-} from "react";
+import { createContext, useContext, useEffect, useReducer } from "react";
 import { Children, EscrowContractProps } from "../../types";
 import { initialState } from "./state";
 import { escrowReducer } from "./reducer";
