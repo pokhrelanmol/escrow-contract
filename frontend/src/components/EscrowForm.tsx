@@ -6,6 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useContracts } from "../contexts/escrowContext/ContractContext";
 import { usePending } from "../contexts/usePending";
 import { useWallet } from "../contexts/useWallet";
+import { useEscrowFactory } from "../contexts/escrowFactoryContext";
 interface FormData {
     arbiter: string;
     beneficiary: string;
@@ -13,6 +14,7 @@ interface FormData {
 }
 const EscrowForm = () => {
     const { handleDeployContract } = useContracts();
+    const { createEscrow } = useEscrowFactory();
     const [formData, setFormData] = useState({} as FormData);
     const { walletAddress } = useWallet();
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,7 +24,7 @@ const EscrowForm = () => {
     const handleDeploy = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         const { arbiter, beneficiary, amount } = formData;
-        await handleDeployContract(arbiter, beneficiary, amount);
+        await createEscrow!(arbiter, beneficiary, amount);
     };
     return (
         <div className="flex flex-col max-w-3xl mx-auto  bg-gray-300 p-10 rounded-lg">

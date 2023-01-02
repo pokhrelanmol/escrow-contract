@@ -327,10 +327,13 @@ export interface Escrow extends BaseContract {
 
   filters: {
     "Approved(address,uint256)"(
-      approver?: null,
+      approver?: PromiseOrValue<string> | null,
       amount?: null
     ): ApprovedEventFilter;
-    Approved(approver?: null, amount?: null): ApprovedEventFilter;
+    Approved(
+      approver?: PromiseOrValue<string> | null,
+      amount?: null
+    ): ApprovedEventFilter;
 
     "IssueRaised()"(): IssueRaisedEventFilter;
     IssueRaised(): IssueRaisedEventFilter;

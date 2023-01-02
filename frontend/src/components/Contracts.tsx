@@ -3,6 +3,7 @@ import ContractCard from "./cards/ContractCard";
 
 const Contracts = () => {
     const { state } = useContracts();
+    console.log(state);
     return (
         <div className="my-10">
             <h1 className="text-2xl text-center underline">Recent Contracts</h1>

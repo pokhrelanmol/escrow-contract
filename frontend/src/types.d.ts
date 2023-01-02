@@ -1,4 +1,5 @@
 import { Contract } from "ethers";
+import { EscrowAction } from "./contexts/escrowContext/actions";
 
 export type Children = {
     children: React.ReactNode;

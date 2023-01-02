@@ -2,21 +2,22 @@
 pragma solidity ^0.8.9;
 
 contract Escrow {
-    event Approved(address approver, uint amount);
+    event Approved(address indexed approver, uint amount);
     event IssueRaised();
     event IssueResolved();
     event Withdrawn(address beneficiary, uint amount);
+
     address public immutable depositor;
     address public immutable beneficiary;
     address public immutable  arbiter;
     bool public isApproved;
     bool public haveIssue;
     bool public isIssueRaised;
-    uint public amountToWithdraw;
+    uint232 public amountToWithdraw;
     
 
     constructor(address _arbiter, address _beneficiary) payable {
-        depositor = msg.sender;
+        depositor = tx.origin;
         arbiter = _arbiter;
         beneficiary = _beneficiary;
     }
@@ -35,6 +36,7 @@ contract Escrow {
             "Only arbiter or depositor can take this action"
         );
         _;
+
     }
 
     function approve() external onlyArbiterOrDepositor {
@@ -44,7 +46,7 @@ contract Escrow {
             require(isIssueRaised == true, "Arbiter cannot approve if issue is not raised");
         }
         uint balance = address(this).balance;
-        amountToWithdraw = balance;
+        amountToWithdraw = uint232(balance);
         isApproved = true;
         emit Approved(msg.sender, balance);
     }
@@ -72,7 +74,8 @@ contract Escrow {
         amountToWithdraw = 0;
         emit Withdrawn(beneficiary, amountToWithdraw);
     }
-
+    receive() external payable {
+    }
     /***********
      * GETTERS *
      ***********/

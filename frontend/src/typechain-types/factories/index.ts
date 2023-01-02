@@ -2,3 +2,4 @@
 /* tslint:disable */
 /* eslint-disable */
 export { Escrow__factory } from "./Escrow__factory";
+export { EscrowFactory__factory } from "./EscrowFactory__factory";

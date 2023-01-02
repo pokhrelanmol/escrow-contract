@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useReducer } from "react";
+import React, { createContext, useContext, useEffect, useReducer } from "react";
 import { Children, EscrowContractProps } from "../../types";
 import { initialState } from "./state";
 import { escrowReducer } from "./reducer";
@@ -13,6 +13,7 @@ import {
 import { usePending } from "../usePending";
 import { parse, stringify } from "flatted";
 import { toast } from "react-toastify";
+import { useEscrowFactory } from "../escrowFactoryContext";
 
 const ContractContext = createContext<EscrowContractProps>(
     {} as EscrowContractProps
@@ -21,16 +22,20 @@ const ContractContext = createContext<EscrowContractProps>(
 export const ContractProvider = ({ children }: Children) => {
     const [state, dispatch] = useReducer(escrowReducer, initialState);
     const { pending, setPending } = usePending();
+    const { deployedEscrows } = useEscrowFactory();
     useEffect(() => {
         (async () => {
-            const contracts = localStorage.getItem("escrows");
-            dispatch({
-                type: actionTypes.SET_INITIAL_STATE,
-                payload: contracts?.length ? parse(contracts) : [],
-            });
+            // if (deployedEscrows.length === 0) return;
+            try {
+                dispatch({
+                    type: actionTypes.SET_INITIAL_STATE,
+                    payload: deployedEscrows,
+                });
+            } catch (error) {
+                console.log(error);
+            }
         })();
-    }, []);
-
+    }, [JSON.stringify(deployedEscrows)]);
     const handleDeployContract = async (
         arbiter: string,
         beneficiary: string,

@@ -2,5 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type { Escrow } from "./Escrow";
+export type { EscrowFactory } from "./EscrowFactory";
 export * as factories from "./factories";
 export { Escrow__factory } from "./factories/Escrow__factory";
+export { EscrowFactory__factory } from "./factories/EscrowFactory__factory";
