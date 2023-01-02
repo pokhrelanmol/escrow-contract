@@ -1,9 +1,18 @@
 import { useContracts } from "../contexts/escrowContext/ContractContext";
+import { useEscrowFactory } from "../contexts/EscrowFactoryContext";
+import { usePending } from "../contexts/usePending";
 import ContractCard from "./cards/ContractCard";
+import Loading from "./Loading";
 
 const Contracts = () => {
     const { state } = useContracts();
-    console.log(state);
+    const { loading } = useEscrowFactory();
+    if (loading)
+        return (
+            <div>
+                <Loading />{" "}
+            </div>
+        );
     return (
         <div className="my-10">
             <h1 className="text-2xl text-center underline">Recent Contracts</h1>

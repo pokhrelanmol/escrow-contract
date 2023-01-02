@@ -6,7 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useContracts } from "../contexts/escrowContext/ContractContext";
 import { usePending } from "../contexts/usePending";
 import { useWallet } from "../contexts/useWallet";
-import { useEscrowFactory } from "../contexts/escrowFactoryContext";
+import { useEscrowFactory } from "../contexts/EscrowFactoryContext";
 interface FormData {
     arbiter: string;
     beneficiary: string;

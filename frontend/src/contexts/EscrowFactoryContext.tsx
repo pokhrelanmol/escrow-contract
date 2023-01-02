@@ -1,19 +1,12 @@
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 import { createContext, useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { getEscrowFactoryContract, getContract } from "../helper";
 import { Escrow } from "../typechain-types";
 import { EscrowFactory } from "../typechain-types/EscrowFactory";
-import { Children, EscrowContract, EscrowContractProps } from "../types";
+import { Children, EscrowContract, EscrowFactoryState } from "../types";
 import { usePending } from "./usePending";
-interface EscrowFactoryState {
-    deployedEscrows: EscrowContract[];
-    createEscrow?: (
-        arbiter: string,
-        beneficiary: string,
-        amount: number
-    ) => Promise<void>;
-}
+
 const initialState: EscrowFactoryState = {} as EscrowFactoryState;
 
 export const EscrowFactoryContext =
@@ -21,57 +14,68 @@ export const EscrowFactoryContext =
 
 export const EscrowFactoryProvider = ({ children }: Children) => {
     const [contract, setContract] = useState<EscrowFactory>();
+    const [loading, setLoading] = useState<boolean>(false);
     const [deployedEscrows, setDeployedEscrows] = useState<EscrowContract[]>(
         []
     );
     const { setPending } = usePending();
 
-    useEffect(() => {
-        const fetchContracts = async () => {
-            try {
-                setPending(true);
-                const escrowFactory = await getEscrowFactoryContract();
-                setContract(escrowFactory);
-                const escrows =
-                    (await escrowFactory.getEscrows()) as unknown as string[];
-                const escrowContracts: EscrowContract[] = [];
-                for (let address of escrows) {
-                    const escrowContract = (await getContract(
-                        address
-                    )) as Escrow;
+    /*********************************
+     *  FETCH ALL DEPLOYED ESCROWS *
+     *********************************/
+    const fetchContracts = async () => {
+        try {
+            setLoading(true);
+            const escrowFactory = await getEscrowFactoryContract();
+            setContract(escrowFactory);
+            const escrows =
+                (await escrowFactory.getEscrows()) as unknown as string[];
 
-                    const payload: EscrowContract = {
-                        address,
-                        arbiter: await escrowContract.arbiter(),
-                        beneficiary: await escrowContract.beneficiary(),
-                        depositor: await escrowContract.depositor(),
-                        isApproved: await escrowContract.isApproved(),
-                        isIssueRaised: await escrowContract.isIssueRaised(),
-                        haveIssue: await escrowContract.haveIssue(),
-                        amount: parseInt(
-                            ethers.utils.formatEther(
-                                await escrowContract.getBalance()
-                            )
-                        ),
-                    };
-                    escrowContracts.push(payload);
-                }
-                setDeployedEscrows(escrowContracts);
-                setPending(false);
-            } catch (error) {
-                setPending(false);
-                toast.error("Something went wrong");
-                console.log(error);
+            const escrowContracts: EscrowContract[] = [];
+            for (let address of escrows) {
+                const escrowContract = (await getContract(address)) as Escrow;
+
+                const payload: EscrowContract = {
+                    address,
+                    arbiter: await escrowContract.arbiter(),
+                    beneficiary: await escrowContract.beneficiary(),
+                    depositor: await escrowContract.depositor(),
+                    isApproved: await escrowContract.isApproved(),
+                    isIssueRaised: await escrowContract.isIssueRaised(),
+                    haveIssue: await escrowContract.haveIssue(),
+                    amount: parseInt(
+                        ethers.utils.formatEther(
+                            await escrowContract.getBalance()
+                        )
+                    ),
+                };
+                escrowContracts.push(payload);
             }
-        };
+            setDeployedEscrows(escrowContracts);
+            setLoading(false);
+        } catch (error) {
+            setLoading(false);
+            console.log(error);
+        }
+    };
 
+    useEffect(() => {
         fetchContracts();
     }, []);
+
+    /**
+     *
+     * @param arbiter
+     * @param beneficiary
+     * @param amount
+     * @returns Promise<void>
+     */
+
     const createEscrow = async (
         arbiter: string,
         beneficiary: string,
         amount: number
-    ) => {
+    ): Promise<void> => {
         setPending(true);
         if (!contract) return;
         try {
@@ -94,9 +98,9 @@ export const EscrowFactoryProvider = ({ children }: Children) => {
                     ),
                 };
 
-                toast.success("Escrow deployed successfully");
                 setPending(false);
                 setDeployedEscrows([...deployedEscrows, newEscrow]);
+                toast.success("Escrow deployed successfully");
             });
         } catch (error) {
             setPending(false);
@@ -108,6 +112,7 @@ export const EscrowFactoryProvider = ({ children }: Children) => {
             value={{
                 deployedEscrows,
                 createEscrow,
+                loading,
             }}
         >
             {children}

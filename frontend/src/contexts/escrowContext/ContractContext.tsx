@@ -13,7 +13,7 @@ import {
 import { usePending } from "../usePending";
 import { parse, stringify } from "flatted";
 import { toast } from "react-toastify";
-import { useEscrowFactory } from "../escrowFactoryContext";
+import { useEscrowFactory } from "../EscrowFactoryContext";
 
 const ContractContext = createContext<EscrowContractProps>(
     {} as EscrowContractProps

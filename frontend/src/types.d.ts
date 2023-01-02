@@ -36,3 +36,12 @@ export interface EscrowContractProps {
 export interface ContractCardProps extends EscrowContract {
     handleClick: () => void;
 }
+export interface EscrowFactoryState {
+    deployedEscrows: EscrowContract[];
+    createEscrow?: (
+        arbiter: string,
+        beneficiary: string,
+        amount: number
+    ) => Promise<void>;
+    loading: boolean;
+}

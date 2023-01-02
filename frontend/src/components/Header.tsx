@@ -31,6 +31,7 @@ const Header = () => {
             window.location.reload();
         });
     }, []);
+    console.log(pending);
     return (
         <div className="flex justify-around items-center">
             <img src={logo} className=" w-36 h-36" alt="Logo" />
