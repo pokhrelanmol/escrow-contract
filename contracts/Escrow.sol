@@ -67,12 +67,15 @@ contract Escrow {
         require(isApproved == true, "Not approved");
         require(haveIssue == false, "Issue is raised cannot withdraw");
         require(msg.sender == beneficiary, "Only beneficiary can withdraw");
+        require(amountToWithdraw > 0, "Nothing to withdraw");
         (bool success, ) = payable(beneficiary).call{value: amountToWithdraw}(
             ""
         );
         require(success, "Transfer failed");
         amountToWithdraw = 0;
         emit Withdrawn(beneficiary, amountToWithdraw);
+        selfdestruct(payable(depositor));
+
     }
     receive() external payable {
     }

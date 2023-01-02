@@ -1,12 +1,13 @@
 # Escrow Contract
 
-This is a simple escrow contract that allows a depositor to transfer funds to a beneficiary, with the option to involve an arbiter to resolve any issues that may arise.
+This is a simple escrow contract that allows a depositor to transfer funds to a beneficiary, with the option to involve an arbiter to resolve any issues that may arise. The contract is self-destructing, meaning that it will be deleted from the blockchain once the funds have been successfully withdrawn by the beneficiary.
 
 ## Features
 
 -   The depositor can transfer funds to the contract upon deployment.
 -   The beneficiary can withdraw the funds after they have been approved by either the depositor or the arbiter.
--   The depositor can raise an issue with the transaction, which must be resolved by the arbiter or depositor before the funds can be withdrawn.
+-   The depositor can raise an issue with the transaction, which must be resolved by the arbiter before the funds can be withdrawn.
+-   After a succesfull withdrawl by beneficiary the contract is self-destructed and reward is sent to depositor
 
 ## Events
 
@@ -22,17 +23,7 @@ The contract includes the following events:
 The contract uses the following modifiers to control access to its functions:
 
 -   `onlyDepositer`: Allows only the depositor to call the function.
--   `onlyBeneficiary`: Allows only the beneficiary to call the function.
--   `onlyArbiterOrDepositor`: Allows only the arbiter or the depositor to call the function.
-
-## Functions
-
-The contract provides the following functions:
-
--   `approve()`: Allows the depositor or the arbiter to approve the funds for withdrawal. This can only be called if there are no issues with the transaction.
--   `raiseIssue()`: Allows the depositor to raise an issue with the transaction.
--   `resolveIssue()`: Allows the depositor or the arbiter to resolve the issue raised by the depositor.
--   `withdraw()`: Allows the beneficiary to withdraw the funds if they have been approved.
+-   `onlyBeneficiary`: Allows only
 
 ## Getters
 
