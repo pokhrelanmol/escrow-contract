@@ -23,7 +23,8 @@ The contract includes the following events:
 The contract uses the following modifiers to control access to its functions:
 
 -   `onlyDepositer`: Allows only the depositor to call the function.
--   `onlyBeneficiary`: Allows only
+-   `onlyBeneficiary`: Allows only the beneficiary to call the function.
+-   `onlyArbiterOrDepositor`: Allows only the arbiter or the depositor to call the function.
 
 ## Getters
 
