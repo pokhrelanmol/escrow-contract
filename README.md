@@ -6,7 +6,7 @@ This is a simple escrow contract that allows a depositor to transfer funds to a 
 
 -   The depositor can transfer funds to the contract upon deployment.
 -   The beneficiary can withdraw the funds after they have been approved by either the depositor or the arbiter.
--   The depositor can raise an issue with the transaction, which must be resolved by the arbiter before the funds can be withdrawn.
+-   The depositor can raise an issue with the transaction, which must be resolved by the arbiter or depositor himself before the funds can be withdrawn.
 -   After a succesfull withdrawl by beneficiary the contract is self-destructed and reward is sent to depositor
 
 ## Events
