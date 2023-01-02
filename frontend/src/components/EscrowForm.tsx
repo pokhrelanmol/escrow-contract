@@ -24,7 +24,15 @@ const EscrowForm = () => {
     const handleDeploy = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         const { arbiter, beneficiary, amount } = formData;
-        await createEscrow!(arbiter, beneficiary, amount);
+        if (!arbiter || !beneficiary || !amount) {
+            console.log("Please fill all fields");
+            alert("Please fill all fields");
+            toast.error("Please fill all fields");
+            return;
+        } else {
+            await createEscrow!(arbiter, beneficiary, amount);
+            setFormData({} as FormData);
+        }
     };
     return (
         <div className="flex flex-col max-w-3xl mx-auto  bg-gray-300 p-10 rounded-lg">

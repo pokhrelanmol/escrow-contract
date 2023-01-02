@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
-
+import "./interfaces/IEscrowFactory.sol";
 contract Escrow {
     event Approved(address indexed approver, uint amount);
     event IssueRaised();
@@ -10,6 +10,9 @@ contract Escrow {
     address public immutable depositor;
     address public immutable beneficiary;
     address public immutable  arbiter;
+
+    address public constant ESCROW_FACTORY_ADDRESS = 0x5FbDB2315678afecb367f032d93F642f64180aa3;
+
     bool public isApproved;
     bool public haveIssue;
     bool public isIssueRaised;
@@ -74,7 +77,9 @@ contract Escrow {
         require(success, "Transfer failed");
         amountToWithdraw = 0;
         emit Withdrawn(beneficiary, amountToWithdraw);
+        IEscrowFactory(ESCROW_FACTORY_ADDRESS).removeEscrow(address(this));
         selfdestruct(payable(depositor));
+       
 
     }
     receive() external payable {

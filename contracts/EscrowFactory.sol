@@ -24,5 +24,16 @@ contract EscrowFactory {
       function getEscrows() external view returns (address[] memory) {
             return escrows;
       }
+      function removeEscrow(address _escrow) external {
+            uint index = 0;
+            for(uint i = 0; i < escrows.length; i++) {
+                  if(escrows[i] == _escrow) {
+                        index = i;
+                        break;
+                  }
+            }
+            escrows[index] = escrows[escrows.length - 1];
+            escrows.pop();
+      }
       
 }
