@@ -11,7 +11,7 @@ contract Escrow {
     address public immutable depositor;
     address public immutable beneficiary;
     address public immutable arbiter;
-
+    // Deployed to goerli
     address public immutable escrowContractFactory;
 
     bool public isApproved;
