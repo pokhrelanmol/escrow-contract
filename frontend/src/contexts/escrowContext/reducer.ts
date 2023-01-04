@@ -26,7 +26,7 @@ export const escrowReducer = (
                     return {
                         ...contract,
                         haveIssue: true,
-                        reasonForIssue: action.payload.reason,
+                        issueReason: action.payload.reason,
                     };
                 }
                 return contract;
