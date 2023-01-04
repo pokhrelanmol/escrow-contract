@@ -11,8 +11,8 @@ const ContractCard = ({
     haveIssue,
     isIssueRaised,
     handleClick,
+    issueReason,
 }: ContractCardProps) => {
-    console.log("havIssue", haveIssue);
     return (
         <div className="flex flex-col gap-1 rounded-lg bg-gray-200 p-7">
             <div className="text-orange-400 text-lg">
@@ -59,6 +59,13 @@ const ContractCard = ({
                         {" "}
                         ⚔️ Issue is Raised
                     </span>
+                    <div className="text-orange-400 text-lg">
+                        Reason :{" "}
+                        <span className="text-gray-600 pl-3 text-base">
+                            {" "}
+                            {issueReason}
+                        </span>
+                    </div>
                 </div>
             ) : isApproved ? (
                 <div className="text-orange-400 text-lg">
@@ -87,6 +94,7 @@ const ContractCard = ({
                 haveIssue={haveIssue}
                 isIssueRaised={isIssueRaised}
                 handleClick={handleClick}
+                issueReason={issueReason}
             />
         </div>
     );

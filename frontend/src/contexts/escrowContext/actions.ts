@@ -23,7 +23,10 @@ export type DeployContract = {
 };
 export type RaiseIssue = {
     type: actionTypes.RAISE_ISSUE;
-    payload: string;
+    payload: {
+        contractAddress: string;
+        reason: string;
+    };
 };
 export type ResolveIssue = {
     type: actionTypes.RESOLVE_ISSUE;
@@ -72,13 +75,14 @@ export const deployContract = async (
         isApproved: false,
         isIssueRaised: false,
         haveIssue: false,
+        issueReason: "",
     };
     return payload;
 };
-export const raiseIssue = async (address: string) => {
+export const raiseIssue = async (address: string, reason: string) => {
     const contract = (await getContract(address)) as Escrow;
-
-    const tx = await contract.raiseIssue();
+    console.log(reason);
+    const tx = await contract.raiseIssue(reason);
     return contract;
 };
 export const resolveIssue = async (address: string) => {

@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { useContracts } from "../contexts/escrowContext/ContractContext";
 import { useWallet } from "../contexts/useWallet";
 import { ContractCardProps } from "../types";
 import Button from "./Button";
+import RaiseIssueModal from "./modals/RaiseIssueModal";
 
 const ButtonsToRender = ({
     address,
@@ -14,6 +16,8 @@ const ButtonsToRender = ({
     handleClick,
 }: ContractCardProps) => {
     const { walletAddress } = useWallet();
+    const [showModal, setShowModal] = useState(false);
+
     const resolvedBtn =
         (walletAddress?.toLowerCase() === depositor.toLowerCase() &&
             isApproved) ||
@@ -36,14 +40,15 @@ const ButtonsToRender = ({
     const withdrawBtn =
         walletAddress?.toLowerCase() === beneficiary.toLowerCase() &&
         isApproved;
-    const {
-        handleRaiseIssue,
-        handleResolveIssue,
-        handleWithdraw,
-        handleApprove,
-    } = useContracts();
+    const { handleResolveIssue, handleWithdraw, handleApprove } =
+        useContracts();
     return (
         <div>
+            <RaiseIssueModal
+                showModal={showModal}
+                setShowModal={setShowModal}
+                contractAddress={address}
+            />
             {!walletAddress ? (
                 <div className="text-center text-red-700 text-2xl">
                     Pease connect Your Wallet First
@@ -84,7 +89,10 @@ const ButtonsToRender = ({
                     <div>
                         <div className="text-center">
                             <Button
-                                handleClick={() => handleRaiseIssue(address)}
+                                handleClick={() => {
+                                    setShowModal(true);
+                                    // handleRaiseIssue(address);
+                                }}
                             >
                                 Raise Issue
                             </Button>

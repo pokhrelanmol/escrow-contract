@@ -43,6 +43,7 @@ export const EscrowFactoryProvider = ({ children }: Children) => {
                     isApproved: await escrowContract.isApproved(),
                     isIssueRaised: await escrowContract.isIssueRaised(),
                     haveIssue: await escrowContract.haveIssue(),
+                    issueReason: await escrowContract.issueReason(),
                     amount: parseInt(
                         ethers.utils.formatEther(
                             await escrowContract.getBalance()
@@ -93,6 +94,7 @@ export const EscrowFactoryProvider = ({ children }: Children) => {
                     isApproved: await contract.isApproved(),
                     isIssueRaised: await contract.isIssueRaised(),
                     haveIssue: await contract.haveIssue(),
+                    issueReason: await contract.issueReason(),
                     amount: parseInt(
                         ethers.utils.formatEther(await contract.getBalance())
                     ),

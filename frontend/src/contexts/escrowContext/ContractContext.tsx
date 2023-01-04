@@ -51,15 +51,21 @@ export const ContractProvider = ({ children }: Children) => {
         // setPending(false);
 
         toast.success("Escrow deployed successfully");
-        localStorage.setItem("escrows", stringify([...state, payload]));
     };
-    const handleRaiseIssue = async (contractAddress: string) => {
+    const handleRaiseIssue = async (
+        contractAddress: string,
+        reason: string
+    ) => {
         setPending(true);
-        const contract = await raiseIssue(contractAddress);
+        const contract = await raiseIssue(contractAddress, reason);
         contract.on("IssueRaised", () => {
+            const payload = {
+                contractAddress: contractAddress,
+                reason: reason,
+            };
             dispatch({
                 type: actionTypes.RAISE_ISSUE,
-                payload: contractAddress,
+                payload: payload,
             });
             setPending(false);
 

@@ -18,12 +18,19 @@ export const escrowReducer = (
 
         case actionTypes.RAISE_ISSUE:
             const stateAfterRaiseIssue = state.map((contract) => {
-                if (contract.address === action.payload) {
-                    return { ...contract, haveIssue: true };
+                console.log(
+                    action.payload.reason,
+                    action.payload.contractAddress
+                );
+                if (contract.address === action.payload.contractAddress) {
+                    return {
+                        ...contract,
+                        haveIssue: true,
+                        reasonForIssue: action.payload.reason,
+                    };
                 }
                 return contract;
             });
-            localStorage.setItem("escrows", stringify(stateAfterRaiseIssue));
             return stateAfterRaiseIssue;
         case actionTypes.RESOLVE_ISSUE:
             const stateAfterResolve = state.map((contract) => {
@@ -35,7 +42,6 @@ export const escrowReducer = (
                 }
                 return contract;
             });
-            localStorage.setItem("escrows", stringify(stateAfterResolve));
             return stateAfterResolve;
         case actionTypes.APPROVE:
             const stateAfterApprove = state.map((contract) => {
@@ -47,14 +53,12 @@ export const escrowReducer = (
                 }
                 return contract;
             });
-            localStorage.setItem("escrows", stringify(stateAfterApprove));
             return stateAfterApprove;
 
         case actionTypes.WITHDRAW:
             const stateAfterWithdrawl = state.filter(
                 (contract) => contract.address !== action.payload
             );
-            localStorage.setItem("escrows", stringify(stateAfterWithdrawl));
             return stateAfterWithdrawl;
 
         default:
