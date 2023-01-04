@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 import "./interfaces/IEscrowFactory.sol";
+
+error ESCROW__NotDepositor();
+error ESCROW__NotBeneficiary();
+error ESCROW__NotArbiterOrDepositor();
+
 contract Escrow {
     event Approved(address indexed approver, uint amount);
     event IssueRaised();
@@ -26,18 +31,18 @@ contract Escrow {
     }
 
     modifier onlyDepositer() {
-        require(msg.sender == depositor, "Only depositor can raise issue");
+        if(msg.sender != depositor)
+            revert ESCROW__NotDepositor();
         _;
     }
     modifier onlyBeneficiary() {
-        require(msg.sender == beneficiary, "Only beneficiary can withdraw");
+        if(msg.sender != beneficiary)
+            revert ESCROW__NotBeneficiary();
         _;
     }
     modifier onlyArbiterOrDepositor() {
-        require(
-            msg.sender == arbiter || msg.sender == depositor,
-            "Only arbiter or depositor can take this action"
-        );
+        if(msg.sender != arbiter || msg.sender != depositor) 
+            revert ESCROW__NotArbiterOrDepositor();
         _;
 
     }
@@ -54,7 +59,8 @@ contract Escrow {
         emit Approved(msg.sender, balance);
     }
 
-    function raiseIssue() external onlyDepositer {
+    function raiseIssue(string memory reason) external onlyArbiterOrDepositor {
+        require(bytes(reason).length > 0, "warning: No reason given");
         haveIssue = true;
         isIssueRaised = true;
         emit IssueRaised();
