@@ -3,6 +3,7 @@ import { useEscrowFactory } from "../contexts/EscrowFactoryContext";
 import { usePending } from "../contexts/usePending";
 import ContractCard from "./cards/ContractCard";
 import Loading from "./Loading";
+import RaiseIssueModal from "./modals/RaiseIssueModal";
 
 const Contracts = () => {
     const { state } = useContracts();
@@ -28,19 +29,23 @@ const Contracts = () => {
                               isApproved,
                               haveIssue,
                               isIssueRaised,
+                              issueReason,
                           }) => (
-                              <ContractCard
-                                  isIssueRaised={isIssueRaised}
-                                  key={address}
-                                  address={address}
-                                  amount={amount}
-                                  beneficiary={beneficiary}
-                                  depositor={depositor}
-                                  arbiter={arbiter}
-                                  isApproved={isApproved}
-                                  haveIssue={haveIssue}
-                                  handleClick={() => {}}
-                              />
+                              <>
+                                  <ContractCard
+                                      isIssueRaised={isIssueRaised}
+                                      key={address}
+                                      address={address}
+                                      amount={amount}
+                                      beneficiary={beneficiary}
+                                      depositor={depositor}
+                                      arbiter={arbiter}
+                                      isApproved={isApproved}
+                                      haveIssue={haveIssue}
+                                      issueReason={issueReason}
+                                      handleClick={() => {}}
+                                  />
+                              </>
                           )
                       )
                     : null}

@@ -25,8 +25,6 @@ const EscrowForm = () => {
         e.preventDefault();
         const { arbiter, beneficiary, amount } = formData;
         if (!arbiter || !beneficiary || !amount) {
-            console.log("Please fill all fields");
-            alert("Please fill all fields");
             toast.error("Please fill all fields");
             return;
         } else {

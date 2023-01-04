@@ -18,6 +18,7 @@ export interface EscrowContract {
     isApproved: boolean;
     haveIssue: boolean;
     isIssueRaised: boolean;
+    issueReason: string;
 }
 export type EscrowState = EscrowContract[];
 
@@ -28,7 +29,7 @@ export interface EscrowContractProps {
         beneficiary: string,
         amount: number
     ) => Promise<void>;
-    handleRaiseIssue: (address: string) => Promise<void>;
+    handleRaiseIssue: (address: string, reason: string) => Promise<void>;
     handleResolveIssue: (address: string) => Promise<void>;
     handleApprove: (address: string) => Promise<void>;
     handleWithdraw: (address: string) => Promise<void>;

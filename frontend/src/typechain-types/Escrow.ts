@@ -33,6 +33,7 @@ export interface EscrowInterface extends utils.Interface {
     "arbiter()": FunctionFragment;
     "beneficiary()": FunctionFragment;
     "depositor()": FunctionFragment;
+    "escrowContractFactory()": FunctionFragment;
     "getArbiter()": FunctionFragment;
     "getBalance()": FunctionFragment;
     "getBeneficiary()": FunctionFragment;
@@ -40,7 +41,8 @@ export interface EscrowInterface extends utils.Interface {
     "haveIssue()": FunctionFragment;
     "isApproved()": FunctionFragment;
     "isIssueRaised()": FunctionFragment;
-    "raiseIssue()": FunctionFragment;
+    "issueReason()": FunctionFragment;
+    "raiseIssue(string)": FunctionFragment;
     "resolveIssue()": FunctionFragment;
     "withdraw()": FunctionFragment;
   };
@@ -52,6 +54,7 @@ export interface EscrowInterface extends utils.Interface {
       | "arbiter"
       | "beneficiary"
       | "depositor"
+      | "escrowContractFactory"
       | "getArbiter"
       | "getBalance"
       | "getBeneficiary"
@@ -59,6 +62,7 @@ export interface EscrowInterface extends utils.Interface {
       | "haveIssue"
       | "isApproved"
       | "isIssueRaised"
+      | "issueReason"
       | "raiseIssue"
       | "resolveIssue"
       | "withdraw"
@@ -75,6 +79,10 @@ export interface EscrowInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "depositor", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "escrowContractFactory",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "getArbiter",
     values?: undefined
@@ -101,8 +109,12 @@ export interface EscrowInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "raiseIssue",
+    functionFragment: "issueReason",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "raiseIssue",
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "resolveIssue",
@@ -121,6 +133,10 @@ export interface EscrowInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "depositor", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "escrowContractFactory",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "getArbiter", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "getBalance", data: BytesLike): Result;
   decodeFunctionResult(
@@ -137,6 +153,10 @@ export interface EscrowInterface extends utils.Interface {
     functionFragment: "isIssueRaised",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "issueReason",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "raiseIssue", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "resolveIssue",
@@ -146,7 +166,7 @@ export interface EscrowInterface extends utils.Interface {
 
   events: {
     "Approved(address,uint256)": EventFragment;
-    "IssueRaised()": EventFragment;
+    "IssueRaised(string)": EventFragment;
     "IssueResolved()": EventFragment;
     "Withdrawn(address,uint256)": EventFragment;
   };
@@ -168,8 +188,10 @@ export type ApprovedEvent = TypedEvent<
 
 export type ApprovedEventFilter = TypedEventFilter<ApprovedEvent>;
 
-export interface IssueRaisedEventObject {}
-export type IssueRaisedEvent = TypedEvent<[], IssueRaisedEventObject>;
+export interface IssueRaisedEventObject {
+  reason: string;
+}
+export type IssueRaisedEvent = TypedEvent<[string], IssueRaisedEventObject>;
 
 export type IssueRaisedEventFilter = TypedEventFilter<IssueRaisedEvent>;
 
@@ -228,6 +250,8 @@ export interface Escrow extends BaseContract {
 
     depositor(overrides?: CallOverrides): Promise<[string]>;
 
+    escrowContractFactory(overrides?: CallOverrides): Promise<[string]>;
+
     getArbiter(overrides?: CallOverrides): Promise<[string]>;
 
     getBalance(overrides?: CallOverrides): Promise<[BigNumber]>;
@@ -242,7 +266,10 @@ export interface Escrow extends BaseContract {
 
     isIssueRaised(overrides?: CallOverrides): Promise<[boolean]>;
 
+    issueReason(overrides?: CallOverrides): Promise<[string]>;
+
     raiseIssue(
+      reason: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -267,6 +294,8 @@ export interface Escrow extends BaseContract {
 
   depositor(overrides?: CallOverrides): Promise<string>;
 
+  escrowContractFactory(overrides?: CallOverrides): Promise<string>;
+
   getArbiter(overrides?: CallOverrides): Promise<string>;
 
   getBalance(overrides?: CallOverrides): Promise<BigNumber>;
@@ -281,7 +310,10 @@ export interface Escrow extends BaseContract {
 
   isIssueRaised(overrides?: CallOverrides): Promise<boolean>;
 
+  issueReason(overrides?: CallOverrides): Promise<string>;
+
   raiseIssue(
+    reason: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -304,6 +336,8 @@ export interface Escrow extends BaseContract {
 
     depositor(overrides?: CallOverrides): Promise<string>;
 
+    escrowContractFactory(overrides?: CallOverrides): Promise<string>;
+
     getArbiter(overrides?: CallOverrides): Promise<string>;
 
     getBalance(overrides?: CallOverrides): Promise<BigNumber>;
@@ -318,7 +352,12 @@ export interface Escrow extends BaseContract {
 
     isIssueRaised(overrides?: CallOverrides): Promise<boolean>;
 
-    raiseIssue(overrides?: CallOverrides): Promise<void>;
+    issueReason(overrides?: CallOverrides): Promise<string>;
+
+    raiseIssue(
+      reason: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     resolveIssue(overrides?: CallOverrides): Promise<void>;
 
@@ -335,8 +374,8 @@ export interface Escrow extends BaseContract {
       amount?: null
     ): ApprovedEventFilter;
 
-    "IssueRaised()"(): IssueRaisedEventFilter;
-    IssueRaised(): IssueRaisedEventFilter;
+    "IssueRaised(string)"(reason?: null): IssueRaisedEventFilter;
+    IssueRaised(reason?: null): IssueRaisedEventFilter;
 
     "IssueResolved()"(): IssueResolvedEventFilter;
     IssueResolved(): IssueResolvedEventFilter;
@@ -361,6 +400,8 @@ export interface Escrow extends BaseContract {
 
     depositor(overrides?: CallOverrides): Promise<BigNumber>;
 
+    escrowContractFactory(overrides?: CallOverrides): Promise<BigNumber>;
+
     getArbiter(overrides?: CallOverrides): Promise<BigNumber>;
 
     getBalance(overrides?: CallOverrides): Promise<BigNumber>;
@@ -375,7 +416,10 @@ export interface Escrow extends BaseContract {
 
     isIssueRaised(overrides?: CallOverrides): Promise<BigNumber>;
 
+    issueReason(overrides?: CallOverrides): Promise<BigNumber>;
+
     raiseIssue(
+      reason: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -401,6 +445,10 @@ export interface Escrow extends BaseContract {
 
     depositor(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    escrowContractFactory(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     getArbiter(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getBalance(overrides?: CallOverrides): Promise<PopulatedTransaction>;
@@ -415,7 +463,10 @@ export interface Escrow extends BaseContract {
 
     isIssueRaised(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    issueReason(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     raiseIssue(
+      reason: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

@@ -4,7 +4,6 @@
 import type {
   BaseContract,
   BigNumber,
-  BigNumberish,
   BytesLike,
   CallOverrides,
   ContractTransaction,
@@ -14,11 +13,7 @@ import type {
   Signer,
   utils,
 } from "ethers";
-import type {
-  FunctionFragment,
-  Result,
-  EventFragment,
-} from "@ethersproject/abi";
+import type { FunctionFragment, Result } from "@ethersproject/abi";
 import type { Listener, Provider } from "@ethersproject/providers";
 import type {
   TypedEventFilter,
@@ -26,31 +21,22 @@ import type {
   TypedListener,
   OnEvent,
   PromiseOrValue,
-} from "./common";
+} from "../common";
 
-export interface EscrowFactoryInterface extends utils.Interface {
+export interface IEscrowFactoryInterface extends utils.Interface {
   functions: {
     "createEscrow(address,address)": FunctionFragment;
-    "escrows(uint256)": FunctionFragment;
     "getEscrows()": FunctionFragment;
     "removeEscrow(address)": FunctionFragment;
   };
 
   getFunction(
-    nameOrSignatureOrTopic:
-      | "createEscrow"
-      | "escrows"
-      | "getEscrows"
-      | "removeEscrow"
+    nameOrSignatureOrTopic: "createEscrow" | "getEscrows" | "removeEscrow"
   ): FunctionFragment;
 
   encodeFunctionData(
     functionFragment: "createEscrow",
     values: [PromiseOrValue<string>, PromiseOrValue<string>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "escrows",
-    values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "getEscrows",
@@ -65,33 +51,21 @@ export interface EscrowFactoryInterface extends utils.Interface {
     functionFragment: "createEscrow",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "escrows", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "getEscrows", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "removeEscrow",
     data: BytesLike
   ): Result;
 
-  events: {
-    "EscrowCreated(address)": EventFragment;
-  };
-
-  getEvent(nameOrSignatureOrTopic: "EscrowCreated"): EventFragment;
+  events: {};
 }
 
-export interface EscrowCreatedEventObject {
-  newEscrow: string;
-}
-export type EscrowCreatedEvent = TypedEvent<[string], EscrowCreatedEventObject>;
-
-export type EscrowCreatedEventFilter = TypedEventFilter<EscrowCreatedEvent>;
-
-export interface EscrowFactory extends BaseContract {
+export interface IEscrowFactory extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  interface: EscrowFactoryInterface;
+  interface: IEscrowFactoryInterface;
 
   queryFilter<TEvent extends TypedEvent>(
     event: TypedEventFilter<TEvent>,
@@ -119,11 +93,6 @@ export interface EscrowFactory extends BaseContract {
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    escrows(
-      arg0: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<[string]>;
-
     getEscrows(overrides?: CallOverrides): Promise<[string[]]>;
 
     removeEscrow(
@@ -137,11 +106,6 @@ export interface EscrowFactory extends BaseContract {
     _beneficiary: PromiseOrValue<string>,
     overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
-
-  escrows(
-    arg0: PromiseOrValue<BigNumberish>,
-    overrides?: CallOverrides
-  ): Promise<string>;
 
   getEscrows(overrides?: CallOverrides): Promise<string[]>;
 
@@ -157,11 +121,6 @@ export interface EscrowFactory extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    escrows(
-      arg0: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<string>;
-
     getEscrows(overrides?: CallOverrides): Promise<string[]>;
 
     removeEscrow(
@@ -170,21 +129,13 @@ export interface EscrowFactory extends BaseContract {
     ): Promise<void>;
   };
 
-  filters: {
-    "EscrowCreated(address)"(newEscrow?: null): EscrowCreatedEventFilter;
-    EscrowCreated(newEscrow?: null): EscrowCreatedEventFilter;
-  };
+  filters: {};
 
   estimateGas: {
     createEscrow(
       _arbiter: PromiseOrValue<string>,
       _beneficiary: PromiseOrValue<string>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    escrows(
-      arg0: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     getEscrows(overrides?: CallOverrides): Promise<BigNumber>;
@@ -200,11 +151,6 @@ export interface EscrowFactory extends BaseContract {
       _arbiter: PromiseOrValue<string>,
       _beneficiary: PromiseOrValue<string>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    escrows(
-      arg0: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     getEscrows(overrides?: CallOverrides): Promise<PopulatedTransaction>;

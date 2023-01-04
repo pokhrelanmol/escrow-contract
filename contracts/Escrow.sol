@@ -2,32 +2,34 @@
 pragma solidity ^0.8.9;
 import "./interfaces/IEscrowFactory.sol";
 
+
 error ESCROW__NotDepositor();
 error ESCROW__NotBeneficiary();
 error ESCROW__NotArbiterOrDepositor();
 
 contract Escrow {
-    event Approved(address indexed approver, uint amount);
-    event IssueRaised();
+    event Approved(address indexed approver, uint256 amount);
+    event IssueRaised(string reason);
     event IssueResolved();
-    event Withdrawn(address beneficiary, uint amount);
+    event Withdrawn(address beneficiary, uint256 amount);
 
     address public immutable depositor;
     address public immutable beneficiary;
-    address public immutable  arbiter;
+    address public immutable arbiter;
 
-    address public constant ESCROW_FACTORY_ADDRESS = 0x5FbDB2315678afecb367f032d93F642f64180aa3;
+    address public immutable escrowContractFactory;
 
     bool public isApproved;
     bool public haveIssue;
     bool public isIssueRaised;
     uint232 public amountToWithdraw;
-    
+    string public issueReason;
 
     constructor(address _arbiter, address _beneficiary) payable {
         depositor = tx.origin;
         arbiter = _arbiter;
         beneficiary = _beneficiary;
+        escrowContractFactory = msg.sender;
     }
 
     modifier onlyDepositer() {
@@ -44,31 +46,35 @@ contract Escrow {
         if(msg.sender != arbiter || msg.sender != depositor) 
             revert ESCROW__NotArbiterOrDepositor();
         _;
-
     }
 
     function approve() external onlyArbiterOrDepositor {
         require(haveIssue == false, "Issue is raised cannot approve");
         require(isApproved == false, "Already approved");
-        if(msg.sender == arbiter){
-            require(isIssueRaised == true, "Arbiter cannot approve if issue is not raised");
+        if (msg.sender == arbiter) {
+            require(
+                isIssueRaised == true,
+                "Arbiter cannot approve if issue is not raised"
+            );
         }
-        uint balance = address(this).balance;
+        uint256 balance = address(this).balance;
         amountToWithdraw = uint232(balance);
         isApproved = true;
         emit Approved(msg.sender, balance);
     }
 
-    function raiseIssue(string memory reason) external onlyArbiterOrDepositor {
-        require(bytes(reason).length > 0, "warning: No reason given");
+    function raiseIssue(string memory reason) external onlyDepositer {
+        require(bytes(reason).length > 0, "No reason given");
         haveIssue = true;
         isIssueRaised = true;
-        emit IssueRaised();
+        issueReason = reason;
+        emit IssueRaised(reason);
     }
 
     function resolveIssue() external onlyArbiterOrDepositor {
-        require(haveIssue,"Issue is not raised");
+        require(haveIssue, "Issue is not raised");
         haveIssue = false;
+        issueReason = "";
         emit IssueResolved();
     }
 
@@ -83,13 +89,12 @@ contract Escrow {
         require(success, "Transfer failed");
         amountToWithdraw = 0;
         emit Withdrawn(beneficiary, amountToWithdraw);
-        IEscrowFactory(ESCROW_FACTORY_ADDRESS).removeEscrow(address(this));
+        IEscrowFactory(escrowContractFactory).removeEscrow(address(this));
         selfdestruct(payable(depositor));
-       
+    }
 
-    }
-    receive() external payable {
-    }
+    receive() external payable {}
+
     /***********
      * GETTERS *
      ***********/
@@ -106,7 +111,7 @@ contract Escrow {
         return arbiter;
     }
 
-    function getBalance() public view returns (uint) {
+    function getBalance() public view returns (uint256) {
         return address(this).balance;
     }
 }
