@@ -84,7 +84,6 @@ export const EscrowFactoryProvider = ({ children }: Children) => {
             const tx = await contract.createEscrow(arbiter, beneficiary, {
                 value: ethers.utils.parseEther(amount.toString()),
             });
-            await tx.wait(1);
             contract.on("EscrowCreated", async (escrow: string) => {
                 const contract = await getContract(escrow);
                 const newEscrow = {

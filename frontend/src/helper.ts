@@ -18,13 +18,12 @@ export const getContract = async (address: string) => {
 export const getEscrowFactoryContract = async (): Promise<EscrowFactory> => {
     const addresses = {
         localhost: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-        goerli: "0x80D095B9d0755d29AF6a15833EB130f056c65F8F",
+        goerli: "0x6885EaA565F2D7C504bc2f9AfA35945F0bCa6aBd",
     };
     const provider = await getProvider();
 
     const { chainId } = await provider.getNetwork();
     const signer = (await provider).getSigner();
-    console.log(chainId);
     const address =
         chainId.toString() === "5" ? addresses.goerli : addresses.localhost;
 

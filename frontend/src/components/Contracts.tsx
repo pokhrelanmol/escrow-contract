@@ -20,21 +20,24 @@ const Contracts = () => {
             <div className="grid grid-cols-2 gap-5 mx-5 items-center mt-6 ">
                 {state.length
                     ? state.map(
-                          ({
-                              address,
-                              amount,
-                              beneficiary,
-                              depositor,
-                              arbiter,
-                              isApproved,
-                              haveIssue,
-                              isIssueRaised,
-                              issueReason,
-                          }) => (
+                          (
+                              {
+                                  address,
+                                  amount,
+                                  beneficiary,
+                                  depositor,
+                                  arbiter,
+                                  isApproved,
+                                  haveIssue,
+                                  isIssueRaised,
+                                  issueReason,
+                              },
+                              index
+                          ) => (
                               <>
                                   <ContractCard
                                       isIssueRaised={isIssueRaised}
-                                      key={address}
+                                      key={index}
                                       address={address}
                                       amount={amount}
                                       beneficiary={beneficiary}
